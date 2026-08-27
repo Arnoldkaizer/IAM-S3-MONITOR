@@ -28,55 +28,46 @@ CLI for AWS IAM user/group management, S3 operations, and security auditing
 ## Architecture
 
 ```mermaid
-flowchart TD
-    subgraph CLI [aws-monitor CLI]
-        Main[Main Entry Point]
-        IAM[IAM Management Module]
-        S3[S3 Management Module]
-        Audit[Audit Module]
-        Scan[Malware Scanner]
-    end
+flowchart LR
+    User[Operator] --> CLI[aws-monitor CLI\nTyper command router]
+    CLI --> IAMCmd[IAM commands\nusers and groups]
+    CLI --> S3Cmd[S3 commands\nbuckets and objects]
+    CLI --> AuditCmd[Audit commands\nsecurity checks]
+    CLI --> ScanCmd[S3 scan commands\nmalware and content]
 
-    subgraph Services [AWS Services]
-        IAM_AWS[AWS IAM]
-        S3_AWS[AWS S3]
-        CloudTrail[AWS CloudTrail]
-    end
+    IAMCmd --> IAM[aws_monitor.iam]
+    S3Cmd --> S3[aws_monitor.s3]
+    AuditCmd --> Audit[aws_monitor.audit]
+    ScanCmd --> Scanner[S3MalwareScanner]
 
-    subgraph Storage [Local Storage]
-        Cache[Session Cache]
-        Config[AWS Config]
-    end
+    Audit --> Checks[MFA, access keys,\npolicies, admin access, groups]
+    Checks --> Findings[AuditFinding list]
+    Findings --> Risk[Risk calculation\n0-10 score and level]
+    Risk --> Output[Terminal findings\nand risk report]
 
-    Main --> IAM
-    Main --> S3
-    Main --> Audit
-    Main --> Scan
+    Scanner --> Download[Download S3 object bytes]
+    Download --> Analyze[Extension, magic bytes,\nentropy, signature patterns]
+    Analyze --> ScanResult[FileScanResult\nrisk score and threats]
 
-    IAM --> IAM_AWS
-    S3 --> S3_AWS
-    Audit --> CloudTrail
+    IAM --> IAMService[AWS IAM]
+    Audit --> IAMService
+    S3 --> S3Service[AWS S3]
+    Scanner --> S3Service
+    IAM -.-> Errors[errors.py\nAWS error mapping]
+    S3 -.-> Errors
+    Audit -.-> Errors
 
-    subgraph Audit Components
-        MFA[MFA Audit]
-        Keys[Access Key Audit]
-        Admin[Admin Access Audit]
-        Policies[Direct Policy Audit]
-        Groups[Group Membership Audit]
-    end
-
-    Audit --> MFA
-    Audit --> Keys
-    Audit --> Admin
-    Audit --> Policies
-    Audit --> Groups
-
-    Scan --> S3_AWS
-
-    style CLI fill:#f9f9f9,stroke:#333
-    style Services fill:#e6f7ff,stroke:#1890ff
-    style Storage fill:#f6ffed,stroke:#52c41a
+    classDef cli fill:#fff3cd,stroke:#b58105,color:#241f00
+    classDef app fill:#e8f1fb,stroke:#3572a5,color:#102a43
+    classDef pipeline fill:#e9f7ef,stroke:#3b8c5a,color:#12351f
+    classDef aws fill:#fce8d5,stroke:#c66a19,color:#3a1d05
+    class User,CLI,IAMCmd,S3Cmd,AuditCmd,ScanCmd cli
+    class IAM,S3,Audit,Scanner,Errors app
+    class Checks,Findings,Risk,Output,Download,Analyze,ScanResult pipeline
+    class IAMService,S3Service aws
 ```
+
+The CLI is the entry point for every workflow. Management commands call AWS directly, audit commands collect IAM findings and optionally calculate a risk score, and S3 scan commands download object bytes before analyzing them locally.
 
 ---
 
