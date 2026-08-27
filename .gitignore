@@ -1,0 +1,19 @@
+.venv/
+.venv-*/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.log
+
+# Local environment and editor files
+.env
+.env.*
+!.env.example
+.vscode/

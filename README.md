@@ -67,6 +67,10 @@ flowchart LR
     class IAMService,S3Service aws
 ```
 
+### Visual Architecture
+
+![AWS IAM & S3 Monitor architecture](architecture.png)
+
 The CLI is the entry point for every workflow. Management commands call AWS directly, audit commands collect IAM findings and optionally calculate a risk score, and S3 scan commands download object bytes before analyzing them locally.
 
 ---
