@@ -17,3 +17,14 @@ build/
 .env.*
 !.env.example
 .vscode/
+iam-least-privilege-policy.json
+README.md
+test_backdoor.php
+test_malware.txt
+README.md
+test_malware.zip
+test_malware.ps1
+README.md
+.gitignore
+test_phishing.pdf
+README.md

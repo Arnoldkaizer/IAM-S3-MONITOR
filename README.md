@@ -296,6 +296,108 @@ ruff format aws_monitor/
 
 ---
 
+## Least Privilege IAM Policy
+
+The tool operates with minimal required permissions. Attach the following policy to your IAM user or role:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "IAMListUsersGroups",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListUsers",
+                "iam:ListGroups"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "IAMUserManagement",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateUser",
+                "iam:DeleteUser",
+                "iam:ListAccessKeys",
+                "iam:DeleteAccessKey",
+                "iam:ListUserPolicies",
+                "iam:DeleteUserPolicy",
+                "iam:ListAttachedUserPolicies",
+                "iam:DetachUserPolicy",
+                "iam:ListGroupsForUser",
+                "iam:RemoveUserFromGroup",
+                "iam:AddUserToGroup"
+            ],
+            "Resource": "arn:aws:iam::*:user/*"
+        },
+        {
+            "Sid": "IAMGroupRead",
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetGroup",
+                "iam:ListAttachedGroupPolicies"
+            ],
+            "Resource": "arn:aws:iam::*:group/*"
+        },
+        {
+            "Sid": "S3ListBuckets",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListAllMyBuckets"
+            ],
+            "Resource": "arn:aws:s3:::*"
+        },
+        {
+            "Sid": "S3BucketRead",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Resource": "arn:aws:s3:::*"
+        },
+        {
+            "Sid": "S3ObjectOperations",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:DeleteObject",
+                "s3:HeadObject"
+            ],
+            "Resource": "arn:aws:s3:::*/*"
+        },
+        {
+            "Sid": "AuditMFA",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListMFADevices"
+            ],
+            "Resource": "arn:aws:iam::*:user/*"
+        },
+        {
+            "Sid": "AuditPolicyAttachments",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListAttachedUserPolicies",
+                "iam:ListAttachedGroupPolicies"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "AuditInlinePolicies",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListUserPolicies"
+            ],
+            "Resource": "arn:aws:iam::*:user/*"
+        }
+    ]
+}
+```
+
+---
+
 ## Author
 
 **Your Name**
